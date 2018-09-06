@@ -14,6 +14,7 @@ db.once('open', function() {
     console.log('mongo connected')
 })
 
+app.use(cors())
 app.use(express.urlencoded({extended : false}))
 app.use(express.json())
 
