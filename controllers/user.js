@@ -1,11 +1,69 @@
 const axios = require('axios')
 const {OAuth2Client} = require('google-auth-library');
-
+const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+const { encrypt } = require('../helpers/encryption')
 
 module.exports = {
 
-    signFb: function(req,res){
-        
+    signinFb: function(req,res){
+        axios({
+            method:'get',
+            url:`https://graph.facebook.com/me?fields=email,name&access_token=${req.body.accessToken}`,
+        })
+        .then(result => {
+            User.findOne({email: result.data.email}, (err, findResult) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    if(findResult) {
+                        jwt.sign({
+                            id: result.data.id
+                        }, 'secret', (err, token) => {
+                            if (err) {
+                                res.status(500).json({message: err.message})
+                            } else {
+                                res.status(201).json({token: token})
+                            }
+                        })
+                    } else {
+                        axios({
+                            method:'GET',
+                            url:`https://gender-api.com/get?name=${result.data.name}&key=MhKTkVNrTBNjQofklH`
+                        })
+                        .then(genderUser => {
+                            User.create({
+                                username: result.data.name,
+                                email: result.data.email,
+                                password: encrypt(result.data.name),
+                                gender: genderUser.data.gender,
+                                statusFb: 1
+                            }, (err) => {
+                                if (err) {
+                                    res.status(500).json({message: err.message})
+                                } else {
+                                    jwt.sign({
+                                        id: result.data.id
+                                    }, 'secret', (err, token) => {
+                                        if (err) {
+                                            res.status(500).json({message: err.message})
+                                        } else {
+                                            res.status(201).json({token: token})
+                                        }
+                                    })
+                                }
+                            })
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        })
+                    }
+                }
+            })
+        })
+        .catch(err => {
+            console.log(err)
+        })
     },
 
     signinGoogle: function(req,res){
