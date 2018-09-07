@@ -69,6 +69,8 @@ module.exports = {
     },
 
     signinGoogle: function(req,res){
+        console.log(req.body.token);
+        
         let token = req.body.token
         let CLIENT_ID = '785037493601-205nrch5cf6k4dfdu7s3mj8e22f590r0.apps.googleusercontent.com'
 
@@ -100,6 +102,8 @@ module.exports = {
                         id: dataUser._id
                     }, 'secret', function (err, token) {
                         if(!err){
+                            console.log('====<2');
+                            
                            res.status(200).json({
                                dataUser,
                                token
@@ -214,7 +218,69 @@ module.exports = {
     },
 
     signup: function(req, res) {
-        console.log(req.body)
+        console.log(req.body);
+        
+        User.findOne({
+            email : req.body.email
+        })
+        .then(foundUser =>{
+            console.log(foundUser == null);
+            
+            if(foundUser !== null){
+            
+                if(foundUser.statusFb == 1){
+            
+                    res.status(400).json({
+                        msg : 'you should login useing facebook'
+                    })
+                    
+                }
+                else if(foundUser.statusGoogle == 1){
+            
+                    res.status(400).json({
+                        msg : 'you should login useing google'
+                    })
+                }                
+            }
+            
+            
+            else if(foundUser == null) {
+                console.log('bbbb');
+                
+                axios.get( `https://gender-api.com/get?name=${req.body.name}&key=MhKTkVNrTBNjQofklH`)
+                .then(user =>{            
+                    User.create({
+                        name: req.body.name,
+                        email: req.body.email,
+                        password: encrypt(req.body.password),
+                        gender : user.data.gender
+                    })
+                    .then(createdUser => {
+        
+                        res.status(200).json({
+                            createdUser,
+                            msg: 'success register new account'
+                        })
+                    })
+                    .catch(err => {
+        
+                        res.status(400).json(err)
+                    })
+                    
+                })
+                .catch(err =>{
+        
+                    res.status(400).json(err)
+                    
+                })
+            }
+        })
+        .catch(err=>{
+            res.status(400).json(err)
+        })
+
+
+      
     }
 
 }
