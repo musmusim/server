@@ -8,6 +8,8 @@ const app  = express()
 const port = 3000
 const db   = mongoose.connection;
 
+app.use(cors())
+
 mongoose.connect('mongodb://localhost:27017/musicApp')
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', function() {

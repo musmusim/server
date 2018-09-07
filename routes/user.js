@@ -1,6 +1,7 @@
 const routes = require('express').Router()
-const { signinGoogle } = require('../controllers/user')
+const { signinGoogle, auth } = require('../controllers/user')
 
 routes.post('/signin/google', signinGoogle)
+routes.post('/authentication', auth)
 
 module.exports = routes
