@@ -8,7 +8,7 @@ const app  = express()
 const port = 3000
 const db   = mongoose.connection;
 
-mongoose.connect('mongodb://localhost:27017/musicApp')
+mongoose.connect('mongodb://localhost:27017/musicApp', { useNewUrlParser: true })
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', function() {
     console.log('mongo connected')

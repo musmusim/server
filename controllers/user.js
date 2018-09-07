@@ -2,6 +2,7 @@ const axios = require('axios')
 const {OAuth2Client} = require('google-auth-library');
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
+const { encrypt } = require('../helpers/encryption')
 
 module.exports = {
 
@@ -32,9 +33,9 @@ module.exports = {
                         })
                         .then(genderUser => {
                             User.create({
+                                username: result.data.name,
                                 email: result.data.email,
-                                name: result.data.name,
-                                password: result.data.name,
+                                password: encrypt(result.data.name),
                                 gender: genderUser.data.gender,
                                 statusFb: 1
                             }, (err) => {
