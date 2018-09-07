@@ -1,9 +1,10 @@
 const axios = require('axios')
 const {OAuth2Client} = require('google-auth-library');
-const User = require('../models/user')
+const User = require('../models/user');
 const jwt = require('jsonwebtoken')
 
 const { encrypt } = require('../helpers/encryption')
+
 
 module.exports = {
 
@@ -68,7 +69,6 @@ module.exports = {
     },
 
     signinGoogle: function(req,res){
-       
         let token = req.body.token
         let CLIENT_ID = '785037493601-205nrch5cf6k4dfdu7s3mj8e22f590r0.apps.googleusercontent.com'
 
@@ -184,6 +184,37 @@ module.exports = {
         
         } 
         
+    },
+
+    signin: function(req, res) {
+        console.log(req.body);
+        User.findOne({
+            where: {
+                username: req.body.username,
+                password: req.body.password
+            }
+        })
+        .then(user => {
+            console.log(user);
+            if(user) {
+
+                jwt.sign()
+                res.status(200).json({
+                    message: 'Signed!'
+                })
+            } else {
+                console.log('user gak ada');
+                res.status(200).json({
+                    message: 'User not found',
+                })
+            }
+            
+        })
+        
+    },
+
+    signup: function(req, res) {
+        console.log(req.body)
     }
 
 }
