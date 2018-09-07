@@ -8,7 +8,6 @@ var userSchema = new Schema({
   gender: String
 });
 
-// var Blog = mongoose.model('Blog', blogSchema);
 const User = mongoose.model('User', userSchema);
 
 module.exports= User;

@@ -47,6 +47,8 @@ module.exports = {
         .then(user => {
             console.log(user);
             if(user) {
+
+                jwt.sign()
                 res.status(200).json({
                     message: 'Signed!'
                 })
@@ -54,8 +56,6 @@ module.exports = {
                 console.log('user gak ada');
                 res.status(200).json({
                     message: 'User not found',
-                    username: req.body.username,
-                    password: req.body.password
                 })
             }
             
